@@ -1,0 +1,6 @@
+@baseUrl = http://localhost:3000
+
+### Database migrations run during startup; health should return 200.
+### After feature 03, create a task, restart the server, then list tasks
+### in 03-create-list.http to verify data survives a restart.
+GET {{baseUrl}}/health
