@@ -45,6 +45,15 @@ describe('Tasks HTTP API', () => {
     await request(app.getHttpServer()).patch('/tasks/not-a-uuid').send({ title: 'x' }).expect(400);
     await request(app.getHttpServer()).patch('/tasks/00000000-0000-4000-8000-000000000000').send({ title: 'x' }).expect(404);
   });
+  it('deletes a task with no response body and returns 404 afterwards', async () => {
+    const created = await request(app.getHttpServer()).post('/tasks').send({ title: 'Delete me' }).expect(201);
+    const url = `/tasks/${created.body.id}`;
+    const deleted = await request(app.getHttpServer()).delete(url).expect(204);
+    expect(deleted.text).toBe('');
+    await request(app.getHttpServer()).get(url).expect(404);
+    await request(app.getHttpServer()).delete(url).expect(404);
+    await request(app.getHttpServer()).delete('/tasks/not-a-uuid').expect(400);
+  });
   it.each([
     {}, { title: '  ' }, { title: 123 }, { title: 'x'.repeat(121) },
     { title: 'ok', description: null }, { title: 'ok', description: 'x'.repeat(2001) },
