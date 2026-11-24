@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { randomUUID } from 'node:crypto';
 import { Repository } from 'typeorm';
@@ -21,5 +21,11 @@ export class TasksService {
 
   findAll(): Promise<Task[]> {
     return this.tasks.find({ order: { createdAt: 'DESC', id: 'ASC' } });
+  }
+
+  async findOne(id: string): Promise<Task> {
+    const task = await this.tasks.findOneBy({ id });
+    if (!task) throw new NotFoundException(`Task ${id} not found`);
+    return task;
   }
 }
