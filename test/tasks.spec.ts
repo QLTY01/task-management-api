@@ -33,6 +33,18 @@ describe('Tasks HTTP API', () => {
     await request(app.getHttpServer()).get('/tasks/not-a-uuid').expect(400);
     await request(app.getHttpServer()).get('/tasks/00000000-0000-4000-8000-000000000000').expect(404);
   });
+  it('updates only supplied fields and validates changes', async () => {
+    const created = await request(app.getHttpServer()).post('/tasks').send({ title: 'Before', description: 'Keep me' }).expect(201);
+    const url = `/tasks/${created.body.id}`;
+    const updated = await request(app.getHttpServer()).patch(url).send({ title: ' After ', status: 'DONE' }).expect(200);
+    expect(updated.body).toMatchObject({ title: 'After', description: 'Keep me', status: 'DONE' });
+    expect((await request(app.getHttpServer()).get(url).expect(200)).body.status).toBe('DONE');
+    for (const body of [{}, { status: 'NOPE' }, { title: null }, { description: null }, { extra: 1 }, { title: ' ' }]) {
+      await request(app.getHttpServer()).patch(url).send(body).expect(400);
+    }
+    await request(app.getHttpServer()).patch('/tasks/not-a-uuid').send({ title: 'x' }).expect(400);
+    await request(app.getHttpServer()).patch('/tasks/00000000-0000-4000-8000-000000000000').send({ title: 'x' }).expect(404);
+  });
   it.each([
     {}, { title: '  ' }, { title: 123 }, { title: 'x'.repeat(121) },
     { title: 'ok', description: null }, { title: 'ok', description: 'x'.repeat(2001) },

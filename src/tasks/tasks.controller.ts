@@ -1,5 +1,6 @@
-import { Body, Controller, Get, Param, ParseUUIDPipe, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, ParseUUIDPipe, Patch, Post } from '@nestjs/common';
 import { CreateTaskDto } from './dto/create-task.dto';
+import { UpdateTaskDto } from './dto/update-task.dto';
 import { Task } from './task.entity';
 import { TasksService } from './tasks.service';
 
@@ -20,5 +21,10 @@ export class TasksController {
   @Get(':id')
   findOne(@Param('id', new ParseUUIDPipe({ version: '4' })) id: string): Promise<Task> {
     return this.tasksService.findOne(id);
+  }
+
+  @Patch(':id')
+  update(@Param('id', new ParseUUIDPipe({ version: '4' })) id: string, @Body() dto: UpdateTaskDto): Promise<Task> {
+    return this.tasksService.update(id, dto);
   }
 }
