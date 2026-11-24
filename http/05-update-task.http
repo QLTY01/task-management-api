@@ -1,0 +1,29 @@
+@baseUrl = http://localhost:3000
+
+### Run this request first to capture the generated ID.
+# @name createForUpdate
+POST {{baseUrl}}/tasks
+Content-Type: application/json
+
+{ "title": "Update this task", "description": "This stays unchanged" }
+
+### Change only the supplied fields (200)
+PATCH {{baseUrl}}/tasks/{{createForUpdate.response.body.$.id}}
+Content-Type: application/json
+
+{ "title": "Updated title", "status": "IN_PROGRESS" }
+
+### Confirm the change (200)
+GET {{baseUrl}}/tasks/{{createForUpdate.response.body.$.id}}
+
+### Invalid status (400)
+PATCH {{baseUrl}}/tasks/{{createForUpdate.response.body.$.id}}
+Content-Type: application/json
+
+{ "status": "INVALID" }
+
+### Empty update (400)
+PATCH {{baseUrl}}/tasks/{{createForUpdate.response.body.$.id}}
+Content-Type: application/json
+
+{}
