@@ -1,8 +1,9 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { randomUUID } from 'node:crypto';
 import { Repository } from 'typeorm';
 import { CreateTaskDto } from './dto/create-task.dto';
+import { UpdateTaskDto } from './dto/update-task.dto';
 import { Task, TaskStatus } from './task.entity';
 
 @Injectable()
@@ -27,5 +28,14 @@ export class TasksService {
     const task = await this.tasks.findOneBy({ id });
     if (!task) throw new NotFoundException(`Task ${id} not found`);
     return task;
+  }
+
+  async update(id: string, dto: UpdateTaskDto): Promise<Task> {
+    if (!Object.values(dto).some((value) => value !== undefined)) {
+      throw new BadRequestException('Provide at least one field to update');
+    }
+    const result = await this.tasks.update(id, dto);
+    if (!result.affected) throw new NotFoundException(`Task ${id} not found`);
+    return this.findOne(id);
   }
 }
