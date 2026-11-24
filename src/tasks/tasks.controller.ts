@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, ParseUUIDPipe, Post } from '@nestjs/common';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { Task } from './task.entity';
 import { TasksService } from './tasks.service';
@@ -15,5 +15,10 @@ export class TasksController {
   @Get()
   findAll(): Promise<Task[]> {
     return this.tasksService.findAll();
+  }
+
+  @Get(':id')
+  findOne(@Param('id', new ParseUUIDPipe({ version: '4' })) id: string): Promise<Task> {
+    return this.tasksService.findOne(id);
   }
 }

@@ -1,0 +1,17 @@
+@baseUrl = http://localhost:3000
+
+### Run this request first; REST Client stores its response as createForGet.
+# @name createForGet
+POST {{baseUrl}}/tasks
+Content-Type: application/json
+
+{ "title": "Find this task" }
+
+### Get the created task (200)
+GET {{baseUrl}}/tasks/{{createForGet.response.body.$.id}}
+
+### A valid but unknown UUID (404)
+GET {{baseUrl}}/tasks/00000000-0000-4000-8000-000000000000
+
+### A malformed ID (400)
+GET {{baseUrl}}/tasks/not-a-uuid
