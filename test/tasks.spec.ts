@@ -26,6 +26,13 @@ describe('Tasks HTTP API', () => {
     const list = await request(app.getHttpServer()).get('/tasks').expect(200);
     expect(list.body).toEqual(expect.arrayContaining([expect.objectContaining({ id: response.body.id })]));
   });
+  it('fetches one task and distinguishes invalid and missing IDs', async () => {
+    const created = await request(app.getHttpServer()).post('/tasks').send({ title: 'Find me' }).expect(201);
+    const found = await request(app.getHttpServer()).get(`/tasks/${created.body.id}`).expect(200);
+    expect(found.body.title).toBe('Find me');
+    await request(app.getHttpServer()).get('/tasks/not-a-uuid').expect(400);
+    await request(app.getHttpServer()).get('/tasks/00000000-0000-4000-8000-000000000000').expect(404);
+  });
   it.each([
     {}, { title: '  ' }, { title: 123 }, { title: 'x'.repeat(121) },
     { title: 'ok', description: null }, { title: 'ok', description: 'x'.repeat(2001) },
