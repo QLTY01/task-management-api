@@ -1,0 +1,4 @@
+@baseUrl = http://localhost:3000
+
+### Server is alive (200)
+GET {{baseUrl}}/health
