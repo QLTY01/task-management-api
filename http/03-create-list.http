@@ -1,0 +1,25 @@
+@baseUrl = http://localhost:3000
+
+### Create a task (201)
+POST {{baseUrl}}/tasks
+Content-Type: application/json
+
+{
+  "title": "Learn NestJS controllers",
+  "description": "Trace this request through the service to SQLite."
+}
+
+### List tasks (200); repeat after restarting to check persistence
+GET {{baseUrl}}/tasks
+
+### Invalid title (400)
+POST {{baseUrl}}/tasks
+Content-Type: application/json
+
+{ "title": "   " }
+
+### Unknown fields are rejected (400)
+POST {{baseUrl}}/tasks
+Content-Type: application/json
+
+{ "title": "Extra field", "surprise": true }
