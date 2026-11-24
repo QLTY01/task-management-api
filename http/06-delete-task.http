@@ -1,0 +1,17 @@
+@baseUrl = http://localhost:3000
+
+### Run this request first to capture a task to delete.
+# @name createForDelete
+POST {{baseUrl}}/tasks
+Content-Type: application/json
+
+{ "title": "Delete this task" }
+
+### Delete (204, no body)
+DELETE {{baseUrl}}/tasks/{{createForDelete.response.body.$.id}}
+
+### Confirm it is gone (404)
+GET {{baseUrl}}/tasks/{{createForDelete.response.body.$.id}}
+
+### Delete again (404)
+DELETE {{baseUrl}}/tasks/{{createForDelete.response.body.$.id}}

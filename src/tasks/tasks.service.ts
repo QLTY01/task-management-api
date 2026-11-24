@@ -38,4 +38,9 @@ export class TasksService {
     if (!result.affected) throw new NotFoundException(`Task ${id} not found`);
     return this.findOne(id);
   }
+
+  async remove(id: string): Promise<void> {
+    const result = await this.tasks.delete(id);
+    if (!result.affected) throw new NotFoundException(`Task ${id} not found`);
+  }
 }
